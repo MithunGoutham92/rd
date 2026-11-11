@@ -54,13 +54,10 @@ Use your own file and tool name where this list says `llm/sorter.py` and `sorter
 5. Follow the TODO comments in your function. Write the code, then delete the `raise NotImplementedError` line.
 6. Run `python3 llm/sorter.py` and try your function on one input.
 7. Run `python3 score.py sorter given`. Change your prompt and code until most of the 10 given
-   cases pass. The teacher's version scores 8 to 10 of 10.
+   cases pass. 
 8. Write your 30 test cases in your cases file (see the section "Write 30 test cases of your own"), then run
    `python3 score.py sorter` for the score out of 40.
-9. Save your tool file and your cases file. Give them to your teacher or team. Phase 2 then joins every tool in `main.py`.
-
-When your function and your prompt parts are written, your file does the same job as the teacher's
-`Completed` version.
+9. Save your tool file and your cases file. Phase 2 then joins every tool in `main.py`.
 
 ## Find your file
 
@@ -220,7 +217,6 @@ Use your own tool's name in these commands.
   your case 3. One case is quicker while you change your prompt.
 - An LLM does not give the same answer every time. Run score.py two or three times before you decide that a
   change made your prompt better.
-- The teacher's version of each tool scores 8 to 10 of 10 on the given cases with llama3.2.
 
 What the messages mean:
 
