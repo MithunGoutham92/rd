@@ -47,7 +47,7 @@ On Windows, type `py` where this README says `python3`. For example: `py -m pip 
 Use your own file and tool name where this list says `llm/sorter.py` and `sorter`.
 
 1. Do "Get the code" and "Set up" above.
-2. Find your role in "Find your file". Open your tool file and read its docstring: it is the contract.
+2. Find your role in "Find your file". Open your tool file and read its docstring.
 3. Read your role in "Your role" below. It says what score.py checks and gives tips.
 4. In your tool file, write the four prompt parts (`instruction`, `context`, `examples`, `output_format`).
    They start as TODO.
@@ -76,7 +76,7 @@ Find your role in the table. You change two files: you write your function in yo
 
 Open your file. From top to bottom it has:
 
-1. **The docstring**, the text between the `"""` marks at the top. **It is the contract**: the inputs, the
+1. **The docstring**, the text between the `"""` marks at the top: the inputs, the
    output and a sample of each. Do not change the function name, its inputs or the keys of its output,
    because `main.py` and `score.py` use them.
 2. **The import lines.** The `if __package__:` lines let the file run on its own and from `main.py`.
@@ -103,7 +103,6 @@ Every tool follows the same steps:
    If not, ask again. Use a `while` loop that stops after 3 tries.
 5. If the 3rd answer is still not usable, `raise ValueError("...")` with a short message. `main.py` then says
    "Sorry, we couldn't process this" and saves nothing.
-6. Return what the contract says.
 
 Some tools need more than one LLM call, or code that does part of the work. The TODO comments in your
 function and the tips for your role below say how.
@@ -198,7 +197,7 @@ Rules for good test cases:
 ## Team files (Phase 2)
 
 In Phase 2 the whole team writes these files together. Do not change them in Phase 1.
-They have a contract and TODO steps, like the role files.
+They have TODO steps, like the role files.
 
 - `llm/duplicates.py`: `find_duplicate(text, need_type, kind, places, posts)` returns `{"duplicate_of": ...}`: the id of an earlier post about the same situation, or None.
 - `llm/report_writer.py`: `write_section(area_name, post_texts)` returns one area's section of the situation report (a str).
