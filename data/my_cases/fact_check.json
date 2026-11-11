@@ -1,0 +1,28 @@
+[
+  {
+    "report": "40 families in Carrefour need clean water. A new clinic opened in Delmas.",
+    "posts": [
+      {
+        "id": 3,
+        "text": "We are 40 families in Carrefour with no clean water since the storm."
+      },
+      {
+        "id": 5,
+        "text": "The road to Jacmel is open again."
+      }
+    ],
+    "claims": [
+      {
+        "status": "supported",
+        "post_ids": [
+          3
+        ]
+      },
+      {
+        "status": "not_found",
+        "post_ids": []
+      }
+    ],
+    "note": "Sample case: change it or replace it with your own."
+  }
+]

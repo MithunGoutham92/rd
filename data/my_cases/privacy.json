@@ -1,0 +1,14 @@
+[
+  {
+    "text": "The bridge on Route 9 near Leogane is broken. Call Pierre Jean at 509-555-0187.",
+    "must_hide": [
+      "Pierre Jean",
+      "509-555-0187"
+    ],
+    "must_keep": [
+      "Route 9",
+      "Leogane"
+    ],
+    "note": "Sample case: change it or replace it with your own."
+  }
+]

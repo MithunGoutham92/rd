@@ -1,0 +1,543 @@
+{
+  "about": "Ten real messages sent after disasters (Haiti earthquake 2010, Hurricane Sandy 2012, Pakistan floods 2010), from the Disaster Response Messages data set. Some messages describe injury and death.",
+  "licence": "Disaster Response Messages (Figure Eight / Appen, packaged by Robert Munro), CC BY 4.0. Keep this notice.",
+  "label_rules": {
+    "need_type": "From the source category columns, first match wins: rescue (search_and_rescue, missing_people), medical (medical_help, medical_products, hospitals), food_water (water, food), shelter, infrastructure (infrastructure_related, buildings, transport, electricity, other_infrastructure), otherwise other.",
+    "kind": "From the source columns: request, offer, otherwise report.",
+    "translated": "True when the source has an original message in another language.",
+    "kept_words": "Names and numbers found in both the original message and the source's English translation. They must survive translation.",
+    "fact_check": "The report has two sentences: the first comes from post 1 of the two posts (supported by it); the second comes from a message about a different need that is not in the posts (not_found).",
+    "privacy": "The last sentence of each privacy text (name, phone or student number, email) is made up and added by us, because the public source data has no personal details. 555-01xx phone numbers and example.com email addresses are reserved for examples."
+  },
+  "cases": [
+    {
+      "id": 1,
+      "source": "Disaster Response Messages (Munro), test split, message id 2809, event haiti_earthquake. CC BY 4.0.",
+      "post": "sil vou ple nan rivye fwad kay mere sainte therese yo gen 2 classe yo poko janm dekonble moun ki anba l yo",
+      "english": "Please held in the Cold River House of Mother St. Theresa there are 2 classes that have not been rescued there are people under there",
+      "source_categories": [
+        "search_and_rescue",
+        "infrastructure_related",
+        "other_infrastructure"
+      ],
+      "expected": {
+        "need_type": "rescue",
+        "kind": "request",
+        "translated": true,
+        "kept_words": [
+          "2"
+        ]
+      },
+      "fact_check": {
+        "report": "Please held in the Cold River House of Mother St. Theresa there are 2 classes that have not been rescued there are people under there. please, is the volcano phenomenal preview for Haiti really?",
+        "posts": [
+          {
+            "id": 1,
+            "text": "Please held in the Cold River House of Mother St. Theresa there are 2 classes that have not been rescued there are people under there"
+          },
+          {
+            "id": 2,
+            "text": "Please, there are a whole bunch of people in Morne Lazar, museau, Delmas 60. in need of water food and medical help. we are bout 3000"
+          }
+        ],
+        "expected": [
+          {
+            "status": "supported",
+            "post_ids": [
+              1
+            ]
+          },
+          {
+            "status": "not_found",
+            "post_ids": []
+          }
+        ]
+      },
+      "privacy": {
+        "text": "Please held in the Cold River House of Mother St. Theresa there are 2 classes that have not been rescued there are people under there Thanks, Jordan Example. Call 206-555-0101 or write to jordan@example.com.",
+        "must_hide": [
+          "Jordan Example",
+          "206-555-0101",
+          "jordan@example.com"
+        ],
+        "must_keep": []
+      }
+    },
+    {
+      "id": 2,
+      "source": "Disaster Response Messages (Munro), test split, message id 2089, event haiti_earthquake. CC BY 4.0.",
+      "post": "Mezanmi tampri souple gen yon pil moun min laza, miso, ak delmas 60 ki nan delmas 60 nan plizie ti abri anviron 3000. Yo bezyen dlo, manje, syen ijyn ak",
+      "english": "Please, there are a whole bunch of people in Morne Lazar, museau, Delmas 60. in need of water food and medical help. we are bout 3000",
+      "source_categories": [
+        "medical_help",
+        "water",
+        "food",
+        "transport",
+        "floods"
+      ],
+      "expected": {
+        "need_type": "medical",
+        "kind": "request",
+        "translated": true,
+        "kept_words": [
+          "Delmas",
+          "60",
+          "3000"
+        ]
+      },
+      "fact_check": {
+        "report": "Please, there are a whole bunch of people in Morne Lazar, museau, Delmas 60. Umer kot: Sindh: Shelter and Camp needed as people are stranded due to flood.",
+        "posts": [
+          {
+            "id": 2,
+            "text": "Please, there are a whole bunch of people in Morne Lazar, museau, Delmas 60. in need of water food and medical help. we are bout 3000"
+          },
+          {
+            "id": 3,
+            "text": "Hi I don't have a place to sleep, it's in the community park on santo 17, on the Peter field, we don't have food, do something for us please."
+          }
+        ],
+        "expected": [
+          {
+            "status": "supported",
+            "post_ids": [
+              2
+            ]
+          },
+          {
+            "status": "not_found",
+            "post_ids": []
+          }
+        ]
+      },
+      "privacy": {
+        "text": "Please, there are a whole bunch of people in Morne Lazar, museau, Delmas 60. in need of water food and medical help. we are bout 3000 Contact: Jordan Example / 206-555-0102 / jordan@example.com",
+        "must_hide": [
+          "Jordan Example",
+          "206-555-0102",
+          "jordan@example.com"
+        ],
+        "must_keep": [
+          "Delmas"
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "source": "Disaster Response Messages (Munro), test split, message id 1609, event haiti_earthquake. CC BY 4.0.",
+      "post": "BONJOU MWEN PA GEN KOTE POU MWEN DOMI SE NAN PAK COMINOT NAN SANTO 17 LA, NAN TREN PIT A NOU PA GEN MANJE FE YON BAGAY POU NOU TANPRI SVP",
+      "english": "Hi I don't have a place to sleep, it's in the community park on santo 17, on the Peter field, we don't have food, do something for us please.",
+      "source_categories": [
+        "food",
+        "shelter"
+      ],
+      "expected": {
+        "need_type": "food_water",
+        "kind": "request",
+        "translated": true,
+        "kept_words": [
+          "17"
+        ]
+      },
+      "fact_check": {
+        "report": "Hi I don't have a place to sleep, it's in the community park on santo 17, on the Peter field, we don't have food, do something for us please. Please held in the Cold River House of Mother St. Theresa there are 2 classes that have not been rescued there are people under there.",
+        "posts": [
+          {
+            "id": 3,
+            "text": "Hi I don't have a place to sleep, it's in the community park on santo 17, on the Peter field, we don't have food, do something for us please."
+          },
+          {
+            "id": 4,
+            "text": "We are AFS ( Association Women without roof ) We need expertise for all house that have no roof that have not fallen especially houses that are on Lazarre Street."
+          }
+        ],
+        "expected": [
+          {
+            "status": "supported",
+            "post_ids": [
+              3
+            ]
+          },
+          {
+            "status": "not_found",
+            "post_ids": []
+          }
+        ]
+      },
+      "privacy": {
+        "text": "Hi I don't have a place to sleep, it's in the community park on santo 17, on the Peter field, we don't have food, do something for us please. My name is Jordan Example, my phone is 206-555-0103, and my email is jordan@example.com.",
+        "must_hide": [
+          "Jordan Example",
+          "206-555-0103",
+          "jordan@example.com"
+        ],
+        "must_keep": []
+      }
+    },
+    {
+      "id": 4,
+      "source": "Disaster Response Messages (Munro), test split, message id 1799, event haiti_earthquake. CC BY 4.0.",
+      "post": "NOU SE AFS ( ASSOCIATION FANM NAN SHADA NOU BESOIN EXPERTISE POU TOUT MAISON KI NAN SHADA KI PA TOMBE SPECIALEMENT KAY KI NAN RUE LAZARRE",
+      "english": "We are AFS ( Association Women without roof ) We need expertise for all house that have no roof that have not fallen especially houses that are on Lazarre Street.",
+      "source_categories": [
+        "shelter",
+        "buildings"
+      ],
+      "expected": {
+        "need_type": "shelter",
+        "kind": "request",
+        "translated": true,
+        "kept_words": [
+          "Association",
+          "Lazarre"
+        ]
+      },
+      "fact_check": {
+        "report": "We are AFS ( Association Women without roof ) We need expertise for all house that have no roof that have not fallen especially houses that are on Lazarre Street. Food clothes supplies tell us what to bring .",
+        "posts": [
+          {
+            "id": 4,
+            "text": "We are AFS ( Association Women without roof ) We need expertise for all house that have no roof that have not fallen especially houses that are on Lazarre Street."
+          },
+          {
+            "id": 5,
+            "text": "I just want to know when they are going to start fix things like roads, light and electricity"
+          }
+        ],
+        "expected": [
+          {
+            "status": "supported",
+            "post_ids": [
+              4
+            ]
+          },
+          {
+            "status": "not_found",
+            "post_ids": []
+          }
+        ]
+      },
+      "privacy": {
+        "text": "We are AFS ( Association Women without roof ) We need expertise for all house that have no roof that have not fallen especially houses that are on Lazarre Street. Thanks, Jordan Example. Call 206-555-0104 or write to jordan@example.com.",
+        "must_hide": [
+          "Jordan Example",
+          "206-555-0104",
+          "jordan@example.com"
+        ],
+        "must_keep": [
+          "Association",
+          "Lazarre"
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "source": "Disaster Response Messages (Munro), test split, message id 2679, event haiti_earthquake. CC BY 4.0.",
+      "post": "mwen ta renmen konnen kile yap ranje anpil bagay tankou kouran, rout, gaz.",
+      "english": "I just want to know when they are going to start fix things like roads, light and electricity",
+      "source_categories": [
+        "transport",
+        "electricity"
+      ],
+      "expected": {
+        "need_type": "infrastructure",
+        "kind": "request",
+        "translated": true,
+        "kept_words": []
+      },
+      "fact_check": {
+        "report": "I just want to know when they are going to start fix things like roads, light and electricity. Umer kot: Sindh: Shelter and Camp needed as people are stranded due to flood.",
+        "posts": [
+          {
+            "id": 5,
+            "text": "I just want to know when they are going to start fix things like roads, light and electricity"
+          },
+          {
+            "id": 6,
+            "text": "good evening! please, is the volcano phenomenal preview for Haiti really?"
+          }
+        ],
+        "expected": [
+          {
+            "status": "supported",
+            "post_ids": [
+              5
+            ]
+          },
+          {
+            "status": "not_found",
+            "post_ids": []
+          }
+        ]
+      },
+      "privacy": {
+        "text": "I just want to know when they are going to start fix things like roads, light and electricity Contact: Jordan Example / 206-555-0105 / jordan@example.com",
+        "must_hide": [
+          "Jordan Example",
+          "206-555-0105",
+          "jordan@example.com"
+        ],
+        "must_keep": []
+      }
+    },
+    {
+      "id": 6,
+      "source": "Disaster Response Messages (Munro), test split, message id 7229, event haiti_earthquake. CC BY 4.0.",
+      "post": "Bonswa svp eske yo prevwa volkan vre pou Haiti?",
+      "english": "good evening! please, is the volcano phenomenal preview for Haiti really?",
+      "source_categories": [],
+      "expected": {
+        "need_type": "other",
+        "kind": "report",
+        "translated": true,
+        "kept_words": [
+          "Haiti"
+        ]
+      },
+      "fact_check": {
+        "report": "please, is the volcano phenomenal preview for Haiti really? Please held in the Cold River House of Mother St. Theresa there are 2 classes that have not been rescued there are people under there.",
+        "posts": [
+          {
+            "id": 6,
+            "text": "good evening! please, is the volcano phenomenal preview for Haiti really?"
+          },
+          {
+            "id": 7,
+            "text": "I am Pestel, there is no food, there is nothing. We are at Dipi's house, please, we are waiting for you"
+          }
+        ],
+        "expected": [
+          {
+            "status": "supported",
+            "post_ids": [
+              6
+            ]
+          },
+          {
+            "status": "not_found",
+            "post_ids": []
+          }
+        ]
+      },
+      "privacy": {
+        "text": "good evening! please, is the volcano phenomenal preview for Haiti really? My name is Jordan Example, my phone is 206-555-0106, and my email is jordan@example.com.",
+        "must_hide": [
+          "Jordan Example",
+          "206-555-0106",
+          "jordan@example.com"
+        ],
+        "must_keep": [
+          "Haiti"
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "source": "Disaster Response Messages (Munro), test split, message id 3729, event haiti_earthquake. CC BY 4.0.",
+      "post": "Mwen pestel pagen manje pa gen anyen kay dipi nou ye sil te pl nap tann nou",
+      "english": "I am Pestel, there is no food, there is nothing. We are at Dipi's house, please, we are waiting for you",
+      "source_categories": [
+        "food"
+      ],
+      "expected": {
+        "need_type": "food_water",
+        "kind": "request",
+        "translated": true,
+        "kept_words": [
+          "Pestel"
+        ]
+      },
+      "fact_check": {
+        "report": "I am Pestel, there is no food, there is nothing. Please, there are a whole bunch of people in Morne Lazar, museau, Delmas 60.",
+        "posts": [
+          {
+            "id": 7,
+            "text": "I am Pestel, there is no food, there is nothing. We are at Dipi's house, please, we are waiting for you"
+          },
+          {
+            "id": 8,
+            "text": "I can also cook food or buy non perishable food and hygiene products . The site only let 's me pick one ! I do have clothes to give as well . Whatever is most needed or all ."
+          }
+        ],
+        "expected": [
+          {
+            "status": "supported",
+            "post_ids": [
+              7
+            ]
+          },
+          {
+            "status": "not_found",
+            "post_ids": []
+          }
+        ]
+      },
+      "privacy": {
+        "text": "I am Pestel, there is no food, there is nothing. We are at Dipi's house, please, we are waiting for you Thanks, Jordan Example. Call 206-555-0107 or write to jordan@example.com.",
+        "must_hide": [
+          "Jordan Example",
+          "206-555-0107",
+          "jordan@example.com"
+        ],
+        "must_keep": []
+      }
+    },
+    {
+      "id": 8,
+      "source": "Disaster Response Messages (Munro), test split, message id 12699, event usa_sandy. CC BY 4.0.",
+      "post": "I can also cook food or buy non perishable food and hygiene products . The site only let 's me pick one ! I do have clothes to give as well . Whatever is most needed or all .",
+      "english": "I can also cook food or buy non perishable food and hygiene products . The site only let 's me pick one ! I do have clothes to give as well . Whatever is most needed or all .",
+      "source_categories": [
+        "food",
+        "clothing"
+      ],
+      "expected": {
+        "need_type": "food_water",
+        "kind": "offer",
+        "translated": false,
+        "kept_words": []
+      },
+      "fact_check": {
+        "report": "I can also cook food or buy non perishable food and hygiene products . We are AFS ( Association Women without roof ) We need expertise for all house that have no roof that have not fallen especially houses that are on Lazarre Street.",
+        "posts": [
+          {
+            "id": 8,
+            "text": "I can also cook food or buy non perishable food and hygiene products . The site only let 's me pick one ! I do have clothes to give as well . Whatever is most needed or all ."
+          },
+          {
+            "id": 9,
+            "text": "Food clothes supplies tell us what to bring . We are collecting in Delaware and coming up !"
+          }
+        ],
+        "expected": [
+          {
+            "status": "supported",
+            "post_ids": [
+              8
+            ]
+          },
+          {
+            "status": "not_found",
+            "post_ids": []
+          }
+        ]
+      },
+      "privacy": {
+        "text": "I can also cook food or buy non perishable food and hygiene products . The site only let 's me pick one ! I do have clothes to give as well . Whatever is most needed or all . Contact: Jordan Example / 206-555-0108 / jordan@example.com",
+        "must_hide": [
+          "Jordan Example",
+          "206-555-0108",
+          "jordan@example.com"
+        ],
+        "must_keep": []
+      }
+    },
+    {
+      "id": 9,
+      "source": "Disaster Response Messages (Munro), test split, message id 12539, event usa_sandy. CC BY 4.0.",
+      "post": "Food clothes supplies tell us what to bring . We are collecting in Delaware and coming up !",
+      "english": "Food clothes supplies tell us what to bring . We are collecting in Delaware and coming up !",
+      "source_categories": [
+        "food",
+        "clothing"
+      ],
+      "expected": {
+        "need_type": "food_water",
+        "kind": "report",
+        "translated": false,
+        "kept_words": []
+      },
+      "fact_check": {
+        "report": "Food clothes supplies tell us what to bring . I just want to know when they are going to start fix things like roads, light and electricity.",
+        "posts": [
+          {
+            "id": 9,
+            "text": "Food clothes supplies tell us what to bring . We are collecting in Delaware and coming up !"
+          },
+          {
+            "id": 10,
+            "text": "Umer kot: Sindh: Shelter and Camp needed as people are stranded due to flood:"
+          }
+        ],
+        "expected": [
+          {
+            "status": "supported",
+            "post_ids": [
+              9
+            ]
+          },
+          {
+            "status": "not_found",
+            "post_ids": []
+          }
+        ]
+      },
+      "privacy": {
+        "text": "Food clothes supplies tell us what to bring . We are collecting in Delaware and coming up ! My name is Jordan Example, my phone is 206-555-0109, and my email is jordan@example.com.",
+        "must_hide": [
+          "Jordan Example",
+          "206-555-0109",
+          "jordan@example.com"
+        ],
+        "must_keep": []
+      }
+    },
+    {
+      "id": 10,
+      "source": "Disaster Response Messages (Munro), test split, message id 14679, event pakistan_floods. CC BY 4.0.",
+      "post": "Umer kot: Sindh: logon ko rehne ke liye ghar,sharan,dera avyashak he.yahan log kinare par kade hein.",
+      "english": "Umer kot: Sindh: Shelter and Camp needed as people are stranded due to flood:",
+      "source_categories": [
+        "shelter",
+        "transport",
+        "floods"
+      ],
+      "expected": {
+        "need_type": "shelter",
+        "kind": "request",
+        "translated": true,
+        "kept_words": [
+          "Umer",
+          "Sindh"
+        ]
+      },
+      "fact_check": {
+        "report": "Umer kot: Sindh: Shelter and Camp needed as people are stranded due to flood. I just want to know when they are going to start fix things like roads, light and electricity.",
+        "posts": [
+          {
+            "id": 10,
+            "text": "Umer kot: Sindh: Shelter and Camp needed as people are stranded due to flood:"
+          },
+          {
+            "id": 1,
+            "text": "Please held in the Cold River House of Mother St. Theresa there are 2 classes that have not been rescued there are people under there"
+          }
+        ],
+        "expected": [
+          {
+            "status": "supported",
+            "post_ids": [
+              10
+            ]
+          },
+          {
+            "status": "not_found",
+            "post_ids": []
+          }
+        ]
+      },
+      "privacy": {
+        "text": "Umer kot: Sindh: Shelter and Camp needed as people are stranded due to flood: Thanks, Jordan Example. Call 206-555-0110 or write to jordan@example.com.",
+        "must_hide": [
+          "Jordan Example",
+          "206-555-0110",
+          "jordan@example.com"
+        ],
+        "must_keep": [
+          "Umer",
+          "Sindh"
+        ]
+      }
+    }
+  ]
+}

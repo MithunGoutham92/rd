@@ -1,0 +1,11 @@
+[
+  {
+    "post": "Nou se 40 fanmi nan Carrefour, nou pa gen dlo.",
+    "translated": true,
+    "keep": [
+      "40",
+      "Carrefour"
+    ],
+    "note": "Sample case: change it or replace it with your own."
+  }
+]
