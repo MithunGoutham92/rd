@@ -257,7 +257,6 @@ The 10 posts come from the Disaster Response Messages data set (Figure Eight / A
 
 ## Notes
 
-- **Content warning:** some posts describe people who are trapped, hurt or hungry after real disasters.
 - llama3.2 translates Haitian Creole poorly. The Language score checks names and numbers, and shows the source's own English next to the model's English, so you can compare them.
 - Labels come from the source data. A few are open to debate (for example, post 9 is labelled report, but it reads like an offer).
 - This project uses the local model llama3.2. Every call has `options={"num_predict": 500}`, so an answer that
