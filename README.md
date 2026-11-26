@@ -1,263 +1,121 @@
 # ReliefDesk
 
-ReliefDesk helps disaster-relief coordinators. People send posts in Haitian Creole, French, Urdu or English. The assistant translates each post, hides personal details, sorts the need, pulls out details, logs it, and writes a situation report where every sentence is checked against the posts.
+ReliefDesk helps disaster-relief coordinators. People text the ReliefDesk number in different languages. The assistant translates each message, hides personal details names and phone numbers if present, so that the later tools never see them, sorts the need, pulls out the places, needs, amounts and times, deduplicates messages about the same incident, and continuously updates a situation report for the disaster relief personnel.
 
-## What the assistant does
+Every LLM call runs on your own computer using llama3.2 for consistency across teams and teammates.
 
-`python3 main.py` sends each post through the tools in this order:
+## Goals
 
-1. **Language** (`process_post`): finds the language and translates the post to English.
-2. **Privacy** (`redact`): hides names, phone numbers and email addresses.
-3. **Sorter** (`sort_post`): chooses the need type and the urgency.
-4. **Details** (`extract_details`): the kind of post (request, offer or report), and its places, needs,
-   amounts and times.
-5. **Duplicates** (`find_duplicate`, team file): checks if an earlier post is about the same situation.
-6. The post is saved in `data/posts.json`.
-
-When you type `report`, it writes the situation report:
-
-7. **Report Writer** (`write_section`, team file): writes one section for each area, from that area's posts.
-8. **Fact Checking** (`check_report`): checks each sentence of the section against the posts. A sentence
-   that no post backs up is marked "left out".
-
-Each tool is one function in one file in `llm/`. When every tool works, the whole assistant works.
-`main.py` stops at the first tool that is not written yet and says "Not ready yet", so in Phase 1 you test
-your own tool on its own (see "Test and score your tool").
-
-## Get the code
-
-1. On this project's GitHub page, click the green **Code** button, then **Download ZIP**.
-2. Unzip the file. You get a folder whose name ends in `-main`, such as `ReliefDesk-main`.
-   On Windows, "Extract All" can put it inside a second folder with the same name: use the folder that has `main.py` in it.
-3. In VS Code, choose **File > Open Folder...** and pick that folder. The VS Code Terminal then starts in it.
-   Run every command from this folder.
-
-## Set up
-
-1. Install Ollama from https://ollama.com and open it. It must be running whenever you use the project.
-2. In the Terminal, run `ollama pull llama3.2`. This downloads the model (about 2 GB), once.
-3. Install the Python package: `python3 -m pip install -r requirements.txt`.
-4. Check it: run `python3 main.py`. It starts and waits for you to type. Until the tools are written, it says
-   "Not ready yet" for anything you type. Type `quit` to stop.
-
-On Windows, type `py` where this README says `python3`. For example: `py -m pip install -r requirements.txt`.
-
-## Your work, step by step
-
-Use your own file and tool name where this list says `llm/sorter.py` and `sorter`.
-
-1. Do "Get the code" and "Set up" above.
-2. Find your role in "Find your file". Open your tool file and read its docstring.
-3. Read your role in "Your role" below. It says what score.py checks and gives tips.
-4. In your tool file, write the four prompt parts (`instruction`, `context`, `examples`, `output_format`).
-   They start as TODO.
-5. Follow the TODO comments in your function. Write the code, then delete the `raise NotImplementedError` line.
-6. Run `python3 llm/sorter.py` and try your function on one input.
-7. Run `python3 score.py sorter given`. Change your prompt and code until most of the 10 given
-   cases pass. 
-8. Write your 30 test cases in your cases file (see the section "Write 30 test cases of your own"), then run
-   `python3 score.py sorter` for the score out of 40.
-9. Save your tool file and your cases file. Phase 2 then joins every tool in `main.py`.
-
-## Find your file
-
-Find your role in the table. You change two files: you write your function in your tool file, and you write
-30 test cases in your cases file. **Do not change any other file.**
-
-| Role | Your tool file | Write this function | Your cases file | Score it |
-|---|---|---|---|---|
-| RD.A Sorter | `llm/sorter.py` | `sort_post` | `data/my_cases/sorter.json` | `python3 score.py sorter` |
-| RD.B Privacy | `llm/privacy.py` | `redact` | `data/my_cases/privacy.json` | `python3 score.py privacy` |
-| RD.C Fact Checking | `llm/fact_check.py` | `check_report` | `data/my_cases/fact_check.json` | `python3 score.py fact_check` |
-| RD.D Details | `llm/details.py` | `extract_details` | `data/my_cases/details.json` | `python3 score.py details` |
-| RD.E Language | `llm/language.py` | `process_post` | `data/my_cases/language.json` | `python3 score.py language` |
-
-## What is in your file
-
-Open your file. From top to bottom it has:
-
-1. **The docstring**, the text between the `"""` marks at the top: the inputs, the
-   output and a sample of each. Do not change the function name, its inputs or the keys of its output,
-   because `main.py` and `score.py` use them.
-2. **The import lines.** The `if __package__:` lines let the file run on its own and from `main.py`.
-   Leave them as they are. To use one more function from `utils.py`, add its name to both import lines.
-3. **Four prompt parts**: `instruction`, `context`, `examples` and `output_format`. Each one says TODO. Write them.
-4. **`build_prompt`**: already written. It puts the four parts and the input into one prompt. Do not change it.
-5. **Your function.** It has TODO comments with the steps, and `raise NotImplementedError(...)`.
-   Write the function, then delete the `raise NotImplementedError` line.
-6. **A small test** at the bottom, under `if __name__ == "__main__":`. Some tests ask you to type an input.
-
-You may add your own helper functions to your file, and you may import more from `utils.py`.
-
-## How every tool works
-
-Every tool follows the same steps:
-
-1. Make the prompt: `prompt = build_prompt(...)`, with your function's inputs.
-2. Call the LLM:
-   `output = ollama.generate(model="llama3.2", prompt=prompt, format="json", options={"num_predict": 500})`.
-   `format="json"` makes the LLM answer in JSON. `num_predict` stops an answer that runs on too long.
-3. Turn the answer into a dict: `answer = read_json(output.response)`. If the answer is not complete JSON,
-   you get `{}`.
-4. Check the answer: are all the keys there, and are the values allowed (for example, a word from your list)?
-   If not, ask again. Use a `while` loop that stops after 3 tries.
-5. If the 3rd answer is still not usable, `raise ValueError("...")` with a short message. `main.py` then says
-   "Sorry, we couldn't process this" and saves nothing.
-
-Some tools need more than one LLM call, or code that does part of the work. The TODO comments in your
-function and the tips for your role below say how.
-
-## Your role
-
-### RD.A Sorter: `llm/sorter.py`
-
-Write `sort_post(post)`. It gets the English post, with personal details hidden, and returns `{"need_type": ..., "urgency": ...}`.
-
-- **score.py passes a given case when** `need_type` is the one in the source data. `urgency` is not scored, but `main.py` saves it.
-- **Your cases** (`data/my_cases/sorter.json`): `post`: a post in English. `need_type`: one of the words in `NEED_TYPES`.
-- **Tip:** `NEED_TYPES` and `URGENCIES` at the top of your file list the allowed words. If a post names more than one need, the first one in `NEED_TYPES` wins: say this in `context`.
-- **Tip:** Check that both answers are words from those lists. If not, ask again.
-
-### RD.B Privacy: `llm/privacy.py`
-
-Write `redact(text)`. It gets the English post and returns `{"redacted_text": ..., "items_hidden": ...}`.
-
-- **score.py passes a given case when** both tests work. Test 1 is the post alone: at least half of its place words must still be there. Test 2 adds a made-up contact line (Jordan Example, a phone number and an email): the name, the phone number and the email must be gone, and at least half of the place words must still be there.
-- **Your cases** (`data/my_cases/privacy.json`): `text`: a post with made-up personal details in it (or none). `must_hide`: every name, phone number and email in the text, copied exactly. `must_keep`: the place words that must stay, such as "Leogane". score.py runs `redact` once on `text`: nothing in `must_hide` may be left, and at least half of `must_keep` must stay.
-- **Tip:** Do not ask the LLM to rewrite the text, because it changes other words too. Ask it to list the items it finds, one list for each key of `PLACEHOLDERS`, plus a list of places. Your code then replaces each item in the text with its `PLACEHOLDERS` value.
-- **Tip:** The LLM often lists things that are not personal details, such as "Someone" or a place name. Your code should skip them. `NOT_NAMES` at the top of your file is a start, and the TODO comments in your function list more cases.
-
-### RD.C Fact Checking: `llm/fact_check.py`
-
-Write `check_report(report, posts)`. It gets a draft report and the posts it is based on, and returns `{"claims": [...]}`, with one claim for each sentence.
-
-- **score.py passes a given case when** for every sentence, `status` and `post_ids` are the ones in the answer key. score.py gives your tool reports with known answers, so you can work before the Report Writer team file is written.
-- **Your cases** (`data/my_cases/fact_check.json`): `report`: a draft report. `posts`: the posts it is based on, each `{"id": a number, "text": "..."}`. `claims`: one for each sentence of the report, each `{"status": "supported" or "not_found", "post_ids": [...]}` with the ids of the posts that state it.
-- **Tip:** Check one sentence at a time: `split_sentences` in `utils.py` splits the report.
-- **Tip:** A sentence copied word for word from a post is backed up by that post. Your code can find this without the LLM.
-- **Tip:** Check that every id the LLM gives is the id of one of the posts.
-
-### RD.D Details: `llm/details.py`
-
-Write `extract_details(post)`. It gets the English post, with personal details hidden, and returns `{"kind": ..., "places": [...], "needs": [...], "amounts": [...], "times": [...]}`.
-
-- **score.py passes a given case when** `kind` is the one in the source data. The lists are not scored, but `main.py` uses `places` to group the posts by area and to find duplicates.
-- **Your cases** (`data/my_cases/details.json`): `post`: a post in English. `kind`: `"request"`, `"offer"` or `"report"`.
-- **Tip:** `KINDS` and `LIST_KEYS` at the top of your file list the allowed kinds and the four list keys.
-- **Tip:** Ask the LLM to copy places, amounts and times word for word from the post, and to give `[]` when there are none.
-
-### RD.E Language: `llm/language.py`
-
-Write `process_post(post)`. It gets the post as it was sent and returns `{"language": ..., "english": ..., "translated": ...}`.
-
-- **score.py passes a given case when** `translated` is right (True only for a post that is not in English), no number from the source is lost, and at least half of the names of places and people are kept.
-- **Your cases** (`data/my_cases/language.json`): `post`: a post in any language. `translated`: `true` if it is not in English, otherwise `false`. `keep`: names and numbers that must stay the same in the English text.
-- **Tip:** Say in `context` that names and numbers must stay exactly the same.
-- **Tip:** If the post is in English, return it exactly as it was written, with `translated` False.
-- **Tip:** llama3.2 translates Haitian Creole poorly. score.py shows the source's own English next to yours, so you can compare them.
-
-## Write 30 test cases of your own
-
-The 10 given cases in `data/cases.json` are only a start. Write 30 more for your tool, so that it is
-tested on 40 cases.
-
-1. Open your cases file, such as `data/my_cases/sorter.json`. It starts with one sample case.
-   Change the sample, or replace it with your own.
-2. Add your cases after it. Each case is `{ ... }` with the fields that "Your role" lists for your
-   tool. Put a comma between two cases. The file looks like this:
+The assistant receives messages as JSON objects that look like this:
 
 ```json
 [
   {
-    "post": "We are 40 families in Carrefour with no clean water since the storm.",
-    "need_type": "food_water",
-    "note": "Sample case: change it or replace it with your own."
-  },
-  {
-    "post": "...",
-    "need_type": "..."
+    "time": "2027-01-12 08:40",
+    "sender": "555-0142",
+    "location": {
+      "latitude": 47.6097,
+      "longitude": -122.3331,
+      "accuracy_m": 800
+    },
+    "message": "We are 40 people trapped in Walmart with no clean water since the storm."
   }
 ]
 ```
 
-3. Run `python3 score.py sorter mine` (with your tool's name). score.py first checks your file. If a
-   case has a missing field or a wrong value, it tells you which one and scores nothing until you fix it.
+`location` is where the mobile network estimates the sender's phone , not a place named in the
+message. `accuracy_m` is the radius in metres: the phone can be anywhere within that distance of the point. `location` is `null` if the network cannot estimate the location. 
 
-Rules for good test cases:
+The assistant must:
 
-- Decide the right answer for each case before you run your tool. Never change an answer to match
-  what your tool says.
-- Cover every need type and every kind, and make at least a quarter of your cases hard: cases where a careless
-  tool would go wrong.
-- Do not copy your test cases, or the 10 given cases, into the `examples` of your prompt.
-  A test shows something only if the tool has not seen the answer.
-- Personal details must be made up. Use phone numbers from 555-0100 to 555-0199 and email addresses that end in @example.com: they are kept for examples.
-- score.py does not use the fields `source` and `note`. Use `note` to say why a case is hard.
+1. Write a **situation report** that gives the **needs** and the **damage**. Every fact must come from the messages. No facts may come from the LLM's trained memory.
+2. **Report each incident only one time.** Many people will report the same incident, in different words and in different
+   languages. The report deduplicates and reports the incident only one time, but says how many messages report it. 
+3. **Never ignore a single message.** An incident that only one message reports must still be in the report.
+4. **Handle unusual messages** that are irrelevant (possibly texted by mistake or meant to be spam to harm the disaster relief efforts). 
+5. **Keep an unbelievable message out of the report.** A message that is hard to believe must not go directly into the report but must be shared **separately**, as a **side note for the authorities**, so that they know about it. Your team decides how the assistant should do this.
+6. **Keep personal details out of the report.** Names, phone numbers and email addresses should not appear in the report or
+   the side note. The assistant still saves each message with its `sender` in `data/posts.json`, so that a human can
+   contact the sender later based on the message ID (see the example below).
 
-## Team files (Phase 2)
+## Situation report
 
-In Phase 2 the whole team writes these files together. Do not change them in Phase 1.
-They have TODO steps, like the role files.
+The assistant writes the report to `data/report.txt`. The report starts with one line that says
+it is a draft for coordinator review. Then it has one section for each area:
 
-- `llm/duplicates.py`: `find_duplicate(text, need_type, kind, places, posts)` returns `{"duplicate_of": ...}`: the id of an earlier post about the same situation, or None.
-- `llm/report_writer.py`: `write_section(area_name, post_texts)` returns one area's section of the situation report (a str).
+| Part | What it holds |
+|---|---|
+| Area name | The place, such as `WALMART`. Messages with no place go under `PLACE NOT GIVEN`. |
+| Needs | What people in this area need: water, food, shelter, medical help, rescue and so on, with amounts when the messages give them. |
+| Damage | What the messages say is damaged or lost: houses, roads, bridges, power and so on. |
 
-## Test and score your tool
+For example:
 
-Use your own tool's name in these commands.
+```
+DRAFT situation report, for coordinator review. Not sent to anyone.
 
-- `python3 llm/sorter.py`: runs the small test at the bottom of your tool file.
-- `python3 score.py sorter`: runs your tool on the 10 given cases, then on your own cases.
-  Each case prints PASS or FAIL and what your tool returned. At the end you see the score on the given
-  cases, the score on yours, and the total, such as `Score: 34 of 40`.
-- `python3 score.py sorter given` or `python3 score.py sorter mine`: only the given cases,
-  or only yours.
-- `python3 score.py sorter 3` runs given case 3, and `python3 score.py sorter mine 3` runs
-  your case 3. One case is quicker while you change your prompt.
-- An LLM does not give the same answer every time. Run score.py two or three times before you decide that a
-  change made your prompt better.
+WALMART
+Needs: About 40 people are trapped with no clean water. (12 messages: #3, #5, #8)
+Damage: The bridge on Route 2 is down. (1 message: #15)
+```
 
-What the messages mean:
 
-- `data/my_cases/... is not valid JSON ... on line 5`: look for a missing comma, quote mark or bracket on that
-  line or the line before it. JSON needs double quotes, and `true`, `false` and `null` in small letters.
-- `data/my_cases/... has mistakes`: the list under it says which of your cases has a missing field or a
-  wrong value.
-- `... is not written yet`: your function still has `raise NotImplementedError`.
-- `FAIL  error: ...`: your function stopped with an error on that case. If it is your ValueError, the LLM gave
-  3 answers your code could not use: make `output_format` and `examples` clearer.
-- `Failed to connect to Ollama`: open the Ollama app, then try again.
-- `model "llama3.2" not found`: run `ollama pull llama3.2`.
-- `No module named 'ollama'`: do step 3 of "Set up".
+## Step 1: set up the team repository
 
-To try another local model, download it with `ollama pull <name>` (the names are on https://ollama.com/search)
-and change `model="llama3.2"` in your file. Score both models and compare.
+1. **The team chooses one GitHub repository owner.** This person should:
+   1. Make the team repository as a copy of this repository (for example, click **Fork** on this repository's GitHub page).
+   2. On the team repository, add every teammate as a collaborator. To do this, each teammate must make a free GitHub account on https://github.com (if they do not have one) and share their user name with the repository owner. Each teammate accepts the email invitation.
+   3. Send the team repository's URL to the team.
+2. **Each person** clones the team repository onto their own computer. Each person copies their own tool file (such as `llm/sorter.py`) into the cloned folder. This replaces the file of the same name.
+3. **Each person** runs their tool to check that it still works, then pushes their work to the team's GitHub repository, following the guidance shared in class. **Each person must have their own commits and at least one merge under their own GitHub account in the team repository** (see the rubric below).
 
-## Files you do not change
+## Step 2: build the project together
 
-- `llm/utils.py` (utils is short for utilities): functions that every tool can use. `load_data(name)` and `load_text(name)` read a file in `data/`, `save_data(name, data)` writes one, `split_sentences(text)` gives a list of sentences, and `read_json(text)` turns the LLM's answer into a dict (`{}` if the answer is not complete JSON). `same_place(a, b)` is True if two place descriptions share a street or place word.
-- `llm/__init__.py`: makes `llm/` a package, so `main.py` can import your tool.
-- `score.py`: checks your tool on the given cases and on yours.
-- `main.py`: joins all the tools.
-- `data/`: the given cases and the data that `main.py` saves. In `data/my_cases/`, change only your own cases file.
+Your objective is described (it is vague intentionally) in "Goals" at the start of this README. The team should define the work to be done and divide this work as the team sees fit (see "Peer evaluation" in the rubric).
 
-## Run the whole assistant
+Plan to support each other and to teach each other what you are not familiar with. Agentic tools such as Claude Code and OpenAI Codex are permitted, but each person must be able to describe the code they committed in their own words.
 
-`python3 main.py`. Type a post, `demo` to log the 10 test posts, `report` for the situation report, or `quit`.
+## Step 3: try your assistant on the kinds of messages that will be tested
 
-## Data
+Before you hand in, check that your assistant works as it should. Cidney will evaluate the project with test messages of the kinds below. She will give each as a JSON file in the format shown in "Goals", and will run your `main.py` on it. Write your own test file in the same format.
 
-- `data/cases.json`: 10 labelled test posts, used by score.py
-- `data/posts.json`: the logged posts (main.py writes it; it starts as [])
-- `data/my_cases/`: one cases file for each tool, such as `data/my_cases/sorter.json`. Each starts with one sample; students add their own.
+- **3 repeated incidents:** one incident in **20** messages, another in **15** messages and another in **10** messages. The messages about
+  each incident use different words and possibly different languages.
+- **4 single incidents:** four different incidents, each in only one message. They must not be ignored.
+- **2 unusual messages:** for example, "Is the airport open for tourists this weekend?"
+- **1 unbelievable message:** for example, "A wave as tall as a mountain hit the town last night and nobody saw it."
 
-## Licence and sources
+Cidney then reads your `data/report.txt` and your side note. Start the run with `data/posts.json` as an empty list (`[]`).
 
-The 10 posts come from the Disaster Response Messages data set (Figure Eight / Appen, packaged by Robert Munro), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Keep this notice.
+## Rubric
+**Peer evaluation (50%):** you will evaluate each of your teammates (not yourself) through the following questions.
+Your responses are confidential and will never be shared with teammates under any circumstance.
 
-## Notes
+| Question | Answer |
+|---|---|
+| Name | Their full name |
+| Proactively seeks solutions, moving the team forward | Number: 1–5 Likert scale |
+| Communicates respectfully | Number: 1–5 Likert scale |
+| Can be trusted to complete their assigned task on time | Number: 1–5 Likert scale |
+| Knows how and when to ask for help | Number: 1–5 Likert scale |
+| Strengths | What does this teammate do particularly well? Give at least one specific detail. |
+| Weaknesses | What are some specific ways this teammate could improve their contribution? Be constructive. |
 
-- llama3.2 translates Haitian Creole poorly. The Language score checks names and numbers, and shows the source's own English next to the model's English, so you can compare them.
-- Labels come from the source data. A few are open to debate (for example, post 9 is labelled report, but it reads like an offer).
-- This project uses the local model llama3.2. Every call has `options={"num_predict": 500}`, so an answer that
-  runs on too long stops instead of hanging your program.
+The Likert scale is as follows:
+- 5: strongly agree - 4: somewhat agree - 3: neutral - 2: somewhat disagree - 1: strongly disagree
+
+**Submission (50%), 13 points:**
+
+| Part | Points | Who | Full points when |
+|---|---|---|---|
+| Git merge | 1 | Each person | In the team repository's history, you have your own commits and at least one merge (a `git pull` that joined teammates' commits with yours). |
+| Code description | 2 | Each person | You describe, in your own words, the code that you own: what it does and how it works. |
+| 3 repeated incidents (20, 15, 10 messages) | 3 (1 each) | Whole team, shared equally | The incident is in the report one time, in the right area, with its needs and damage. It is not repeated for each message, and every fact comes from the messages. |
+| 4 single incidents | 4 (1 each) | Whole team, shared equally | The incident is in the report. It is not left out, and it is not joined with a different incident. |
+| 2 unusual messages | 2 (1 each) | Whole team, shared equally | The assistant does not stop with an error and does not make up facts. The message is handled in a sensible way (for example, under `PLACE NOT GIVEN`, or not in the report when it states no need or damage). |
+| 1 unbelievable message | 1 | Whole team, shared equally | The message is not in the report. It is in the separate side note for the authorities, and your team's README says where to find it. |
+
+Everyone on the team gets the same points for the test messages. The Git merge point and the code description points are for each person.
+
+License
+`data/cases.json`: Disaster Response Messages from https://github.com/rmunro/disaster_response_messages.git
